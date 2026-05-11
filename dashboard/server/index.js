@@ -41,12 +41,13 @@ app.use(cors({
 // Sessions stored in your existing Postgres DB
 app.use(session({
   store: new PgSession({ pool: db, tableName: 'dashboard_sessions' }),
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'vipergard-secret-fallback',
   resave: false,
   saveUninitialized: false,
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    secure: process.env.NODE_ENV === 'production',
+    secure: false,
+    sameSite: 'lax',
   },
 }));
 

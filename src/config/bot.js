@@ -29,7 +29,7 @@ export const botConfig = {
         // Activity type 3 = Watching
         type: 3,
         // Twitch stream URL for streaming status
-        url: "https://www.twitch.tv/ViperFox",
+        url: "https://www.twitch.tv/ViperFoxTV",
       },
     ],
   },

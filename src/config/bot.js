@@ -25,7 +25,7 @@ export const botConfig = {
     activities: [
       {
         // Watching ViperFox on Twitch
-        name: "ViperFox on Twitch",
+        name: "ViperFoxTV on Twitch",
         // Activity type 3 = Watching
         type: 3,
         // Twitch stream URL for streaming status

@@ -24,10 +24,12 @@ export const botConfig = {
     // 5 = Competing
     activities: [
       {
-        // Text users will see (example: "Playing /help | Titan Bot").
-        name: "Made with ❤️",
-        // Activity type number (0 = Playing).
-        type: 0, 
+        // Watching ViperFox on Twitch
+        name: "ViperFox on Twitch",
+        // Activity type 3 = Watching
+        type: 3,
+        // Twitch stream URL for streaming status
+        url: "https://www.twitch.tv/ViperFox",
       },
     ],
   },
@@ -41,7 +43,7 @@ export const botConfig = {
     owners: process.env.OWNER_IDS?.split(",") || [],
 
     // Default wait time between command uses (in seconds).
-    defaultCooldown: 3, 
+    defaultCooldown: 3,
 
     // If true, old commands are removed before re-registering.
     deleteCommands: false,
@@ -50,7 +52,13 @@ export const botConfig = {
     testGuildId: process.env.TEST_GUILD_ID,
 
     // Default prefix for text-based commands.
-    prefix: ".",
+    prefix: "!",
+
+    // Maintenance mode — if true, only owners can use commands.
+    maintenance: false,
+
+    // Log level for the bot (debug | info | warn | error).
+    logLevel: "info",
   },
 
   // =========================
@@ -67,47 +75,47 @@ export const botConfig = {
     // Embed colors by application status.
     statusColors: {
       pending: "#FFA500",
-      approved: "#00FF00",
-      denied: "#FF0000",
+      approved: "#2ECC71",
+      denied: "#ED4245",
     },
 
     // How long users must wait before submitting another application (hours).
-    applicationCooldown: 24, 
+    applicationCooldown: 24,
 
     // Auto-delete denied applications after this many days.
-    deleteDeniedAfter: 7, 
+    deleteDeniedAfter: 7,
 
     // Auto-delete approved applications after this many days.
-    deleteApprovedAfter: 30, 
+    deleteApprovedAfter: 30,
 
     // Role IDs allowed to manage applications.
-    managerRoles: [], // Will be populated from environment or database
+    managerRoles: [],
   },
 
   // =========================
   // EMBED COLORS & BRANDING
   // =========================
-  // IMPORTANT: This is the SINGLE SOURCE OF TRUTH for all bot colors
+  // Green & Black color scheme for ViperGuard
   embeds: {
     colors: {
       // Main brand colors.
-      primary: "#336699", 
-      secondary: "#2F3136", 
+      primary: "#2ECC71",     // Viper Green
+      secondary: "#1A1A1A",   // Deep Black
 
-      // Standard status colors for success/error/warning/info messages.
-      success: "#57F287", 
-      error: "#ED4245", 
-      warning: "#FEE75C", 
-      info: "#3498DB", 
+      // Standard status colors.
+      success: "#2ECC71",     // Green
+      error: "#ED4245",       // Red
+      warning: "#FEE75C",     // Yellow
+      info: "#1ABC9C",        // Teal Green
 
       // Neutral utility colors.
       light: "#FFFFFF",
-      dark: "#202225",
+      dark: "#0D0D0D",
       gray: "#99AAB5",
 
       // Discord-style palette shortcuts.
       blurple: "#5865F2",
-      green: "#57F287",
+      green: "#2ECC71",
       yellow: "#FEE75C",
       fuchsia: "#EB459E",
       red: "#ED4245",
@@ -115,39 +123,38 @@ export const botConfig = {
 
       // Feature-specific colors.
       giveaway: {
-        active: "#57F287",
+        active: "#2ECC71",
         ended: "#ED4245",
       },
       ticket: {
-        open: "#57F287",
+        open: "#2ECC71",
         claimed: "#FAA61A",
         closed: "#ED4245",
         pending: "#99AAB5",
       },
-      economy: "#F1C40F",
-      birthday: "#E91E63",
-      moderation: "#9B59B6",
+      economy: "#2ECC71",
+      birthday: "#1ABC9C",
+      moderation: "#2ECC71",
 
       // Ticket priority color mapping.
       priority: {
         none: "#95A5A6",
-        low: "#3498db",
-        medium: "#2ecc71",
-        high: "#f1c40f",
-        urgent: "#e74c3c",
+        low: "#1ABC9C",
+        medium: "#2ECC71",
+        high: "#F1C40F",
+        urgent: "#ED4245",
       },
     },
     footer: {
       // Default footer text used in bot embeds.
-      text: "Titan Bot",
+      text: "ViperGuard",
       // Footer icon URL (null = no icon).
       icon: null,
     },
     // Default thumbnail URL for embeds (null = no thumbnail).
     thumbnail: null,
     author: {
-      // Optional default embed author block.
-      name: null,
+      name: "ViperGuard",
       icon: null,
       url: null,
     },
@@ -159,17 +166,17 @@ export const botConfig = {
   economy: {
     currency: {
       // Currency display name.
-      name: "coins",
+      name: "Viper Coin",
       // Plural display name.
-      namePlural: "coins",
+      namePlural: "Viper Coins",
       // Currency symbol shown in balances.
-      symbol: "$",
+      symbol: "🐍",
     },
 
     // Starting balance for new users.
     startingBalance: 0,
 
-    // Maximum bank amount before upgrades (if upgrades are used).
+    // Maximum bank amount before upgrades.
     baseBankCapacity: 100000,
 
     // Daily reward amount.
@@ -183,20 +190,35 @@ export const botConfig = {
     begMin: 5,
     begMax: 50,
 
+    // Tax rate on transfers between users (0.05 = 5%).
+    transferTax: 0.05,
+
+    // Maximum amount transferable in one transaction.
+    maxTransferAmount: 50000,
+
+    // Whether the lottery system is enabled.
+    lotteryEnabled: true,
+
     // Chance to succeed when robbing (0.4 = 40%).
     robSuccessRate: 0.4,
 
     // Jail time after failed rob (milliseconds).
     // 3600000 = 1 hour.
-    robFailJailTime: 3600000, 
+    robFailJailTime: 3600000,
   },
 
   // =========================
   // SHOP SETTINGS
   // =========================
-  // Add shop defaults here when needed.
   shop: {
-    
+    // Maximum number of items allowed in the shop.
+    maxItems: 50,
+
+    // Default duration for shop items (days). null = permanent.
+    defaultItemDuration: null,
+
+    // Allow users to create their own shop listings.
+    allowUserShops: false,
   },
 
   // =========================
@@ -233,7 +255,7 @@ export const botConfig = {
       },
       urgent: {
         emoji: "🚨",
-        color: "#E91E63",
+        color: "#ED4245",
         label: "Urgent",
       },
     },
@@ -254,17 +276,18 @@ export const botConfig = {
   giveaways: {
     // Default giveaway duration in milliseconds.
     // 86400000 = 24 hours.
-    defaultDuration: 86400000, 
+    defaultDuration: 86400000,
+
+    // Default message shown in giveaway embeds.
+    defaultMessage: "🎉 A new giveaway has started! React to enter!",
 
     // Allowed winner count range.
     minimumWinners: 1,
     maximumWinners: 10,
 
     // Allowed giveaway duration range in milliseconds.
-    // 300000 = 5 minutes.
-    minimumDuration: 300000, 
-    // 2592000000 = 30 days.
-    maximumDuration: 2592000000, 
+    minimumDuration: 300000,      // 5 minutes
+    maximumDuration: 2592000000,  // 30 days
 
     // Role IDs allowed to host giveaways.
     allowedRoles: [],
@@ -283,6 +306,9 @@ export const botConfig = {
     // Channel ID where birthday announcements are posted.
     announcementChannel: null,
 
+    // Hour of the day to post birthday announcements (24hr, UTC).
+    announcementTime: 9,
+
     // Timezone used to calculate birthday dates.
     timezone: "UTC",
   },
@@ -299,78 +325,196 @@ export const botConfig = {
 
     // Automatic verification behavior.
     autoVerify: {
-      // How automatic verification decides who is auto-approved:
-      // - "none"        = everyone is auto-verified immediately
-      // - "account_age" = account must be older than set days
-      // - "server_size" = auto-verify everyone only in smaller servers
       defaultCriteria: "none",
-
-      // Days used when `defaultCriteria` is `account_age`.
       defaultAccountAgeDays: 7,
-
-      // Member count threshold used when `defaultCriteria` is `server_size`.
-      // Example: 1000 means auto-verify if server has fewer than 1000 members.
       serverSizeThreshold: 1000,
-
-      // Allowed safety limits for account-age requirements.
-      // 1 = minimum day, 365 = maximum days.
-      minAccountAge: 1,      
-      maxAccountAge: 365,    
-
-      // If true, user receives a DM after verification.
+      minAccountAge: 1,
+      maxAccountAge: 365,
       sendDMNotification: true,
-
-      // Human-readable descriptions for each criteria mode.
       criteria: {
         account_age: "Account must be older than specified days",
         server_size: "All users if server has less than 1000 members",
-        none: "All users immediately"
-      }
+        none: "All users immediately",
+      },
     },
 
     // Minimum time between verification attempts (milliseconds).
-    // 5000 = 5 seconds.
-    verificationCooldown: 5000,  
+    verificationCooldown: 5000,
 
     // Maximum failed attempts allowed inside the time window below.
-    maxVerificationAttempts: 3,   
+    maxVerificationAttempts: 3,
 
     // Time window for counting attempts (milliseconds).
-    // 60000 = 1 minute.
-    attemptWindow: 60000,          
+    attemptWindow: 60000,
 
-    // In-memory safety limits (helps avoid unbounded memory growth).
+    // In-memory safety limits.
     maxCooldownEntries: 10000,
     maxAttemptEntries: 10000,
-    // Cleanup frequency for cooldown/attempt maps (milliseconds).
-    // 300000 = 5 minutes.
-    cooldownCleanupInterval: 300000, 
-    // Maximum metadata payload size for audit entries (bytes).
+    cooldownCleanupInterval: 300000,
     maxAuditMetadataBytes: 4096,
-    // Maximum number of audit entries kept in memory.
     maxInMemoryAuditEntries: 1000,
-  // If true, log every verification action.
-  logAllVerifications: true,
-  // If true, preserve verification audit history.
-  keepAuditTrail: true,
+    logAllVerifications: true,
+    keepAuditTrail: true,
   },
 
   // =========================
   // WELCOME / GOODBYE MESSAGES
   // =========================
   welcome: {
-    // Welcome template posted when a user joins.
     // Placeholders: {user}, {server}, {memberCount}
     defaultWelcomeMessage:
       "Welcome {user} to {server}! We now have {memberCount} members!",
-    // Goodbye template posted when a user leaves.
     // Placeholders: {user}, {memberCount}
     defaultGoodbyeMessage:
       "{user} has left the server. We now have {memberCount} members.",
-    // Channel ID for welcome messages.
     defaultWelcomeChannel: null,
-    // Channel ID for goodbye messages.
     defaultGoodbyeChannel: null,
+    // Whether to send welcome/goodbye as an embed.
+    embedEnabled: true,
+  },
+
+  // =========================
+  // AUTO-ROLE ON JOIN
+  // =========================
+  autoRole: {
+    // Whether auto-role is enabled.
+    enabled: true,
+
+    // Role ID(s) to assign when a user joins the server.
+    // Add multiple role IDs to this array if needed.
+    roles: [],
+
+    // Delay before assigning the role (milliseconds). 0 = immediate.
+    delay: 0,
+  },
+
+  // =========================
+  // BOOST REWARDS
+  // =========================
+  boostRewards: {
+    // Whether boost rewards are enabled.
+    enabled: true,
+
+    // Role ID to assign when a user boosts the server.
+    role: null,
+
+    // Viper Coins to award on boost.
+    coinsReward: 5000,
+
+    // Channel ID to announce boosts in.
+    announcementChannel: null,
+
+    // Message sent when someone boosts.
+    // Placeholders: {user}, {server}
+    message: "🐍 {user} just boosted {server}! Thank you for your support!",
+  },
+
+  // =========================
+  // MODERATION SETTINGS
+  // =========================
+  moderation: {
+    // DM the user when they are kicked.
+    dmOnKick: true,
+
+    // DM the user when they are banned.
+    dmOnBan: true,
+
+    // DM the user when they are muted/timed out.
+    dmOnMute: true,
+
+    // DM the user when they receive a warning.
+    dmOnWarn: true,
+
+    // Channel ID where all moderation actions are logged.
+    auditLogChannel: null,
+
+    // Moderation actions tracked in staff history.
+    trackedActions: ["warn", "kick", "ban", "mute", "timeout", "strike"],
+
+    // Auto-escalation thresholds — action taken when warn count is reached.
+    autoEscalation: {
+      enabled: false,
+      thresholds: [
+        { warns: 3, action: "mute",    duration: 3600000 },  // 1 hour mute at 3 warns
+        { warns: 5, action: "kick",    duration: null },      // Kick at 5 warns
+        { warns: 7, action: "ban",     duration: null },      // Ban at 7 warns
+      ],
+    },
+  },
+
+  // =========================
+  // USER NOTES
+  // =========================
+  notes: {
+    // Whether the notes system is enabled.
+    enabled: true,
+
+    // Maximum number of notes per user.
+    maxNotesPerUser: 20,
+
+    // Role IDs allowed to add/view notes (populated from mod roles or env).
+    allowedRoles: [],
+  },
+
+  // =========================
+  // USER HISTORY
+  // =========================
+  history: {
+    // Whether user moderation history is enabled.
+    enabled: true,
+
+    // How long to keep history entries (days). null = forever.
+    retentionDays: null,
+
+    // Whether to include expired/pardoned actions in history.
+    includeExpired: true,
+  },
+
+  // =========================
+  // STAFF HISTORY
+  // =========================
+  staffHistory: {
+    // Whether staff action history is enabled.
+    enabled: true,
+
+    // Actions logged to staff history.
+    trackedActions: ["warn", "kick", "ban", "mute", "timeout", "strike"],
+
+    // Whether staff members can view their own history.
+    selfView: true,
+
+    // How long to retain staff history entries (days). null = forever.
+    retentionDays: null,
+  },
+
+  // =========================
+  // CROSS-BAN SYSTEM
+  // =========================
+  // Cross-ban syncs bans across ALL servers the bot is in.
+  crossBan: {
+    // Whether the cross-ban system is enabled.
+    enabled: true,
+
+    // If true, bans sync automatically to all servers the bot is in.
+    // If false, each server must opt in individually.
+    autoSync: true,
+
+    // Server IDs that are exempt from receiving cross-bans.
+    exemptGuilds: [],
+
+    // If true, only bot owners can issue cross-bans.
+    // If false, allowedRoles can also issue them.
+    ownerOnly: false,
+
+    // Role IDs allowed to issue cross-bans (if ownerOnly is false).
+    allowedRoles: [],
+
+    // Whether to log cross-ban actions to the audit log channel.
+    logToBanAudit: true,
+
+    // Message posted in each server when a cross-ban is issued.
+    // Placeholders: {user}, {reason}, {issuer}
+    banMessage: "🐍 Cross-ban issued for {user} | Reason: {reason} | Issued by: {issuer}",
   },
 
   // =========================
@@ -378,28 +522,21 @@ export const botConfig = {
   // =========================
   counters: {
     defaults: {
-      // Default naming/description templates for counter entries.
       name: "{name} Counter",
       description: "Server {name} counter",
-      // Channel type used for counters (typically "voice").
       type: "voice",
-      // Channel name format. `{count}` is replaced automatically.
       channelName: "{name}-{count}",
     },
     permissions: {
-      // Default denied permissions for the counter channel.
       deny: ["VIEW_CHANNEL"],
-      // Default allowed permissions for the counter channel.
       allow: ["VIEW_CHANNEL", "CONNECT", "SPEAK"],
     },
     messages: {
-      // Default response messages for counter actions.
       created: "✅ Created counter **{name}**",
       deleted: "🗑️ Deleted counter **{name}**",
       updated: "🔄 Updated counter **{name}**",
     },
     types: {
-      // Built-in counter types and how each count is calculated.
       members: {
         name: "👥 Members",
         description: "Total members in the server",
@@ -424,19 +561,17 @@ export const botConfig = {
   // GENERIC BOT MESSAGES
   // =========================
   messages: {
-    noPermission: "You do not have permission to use this command.",
-    cooldownActive: "Please wait {time} before using this command again.",
-    errorOccurred: "An error occurred while executing this command.",
-    missingPermissions:
-      "I am missing required permissions to perform this action.",
-    commandDisabled: "This command has been disabled.",
-    maintenanceMode: "The bot is currently in maintenance mode.",
+    noPermission: "🐍 You do not have permission to use this command.",
+    cooldownActive: "🐍 Please wait {time} before using this command again.",
+    errorOccurred: "🐍 An error occurred while executing this command.",
+    missingPermissions: "🐍 I am missing required permissions to perform this action.",
+    commandDisabled: "🐍 This command has been disabled.",
+    maintenanceMode: "🐍 ViperGuard is currently in maintenance mode. Please try again later.",
   },
 
   // =========================
   // FEATURE TOGGLES
   // =========================
-  // Set any feature to `false` to disable it globally.
   features: {
     // Core systems.
     economy: true,
@@ -445,18 +580,26 @@ export const botConfig = {
     logging: true,
     welcome: true,
 
-    // Community engagement systems.
+    // Community engagement.
     tickets: true,
     giveaways: true,
     birthday: true,
     counter: true,
 
-    // Security and self-service systems.
+    // Security and self-service.
     verification: true,
     reactionRoles: true,
     joinToCreate: true,
 
-    // Utility/quality-of-life modules.
+    // ViperGuard exclusive features.
+    autoRole: true,
+    boostRewards: true,
+    notes: true,
+    history: true,
+    staffHistory: true,
+    crossBan: true,
+
+    // Utility/quality-of-life.
     voice: true,
     search: true,
     tools: true,
@@ -470,7 +613,6 @@ export const botConfig = {
 export function validateConfig(config) {
   const errors = [];
 
-  
   if (process.env.NODE_ENV !== 'production') {
     logger.debug('Environment variables check:');
     logger.debug('DISCORD_TOKEN exists:', !!process.env.DISCORD_TOKEN);
@@ -489,7 +631,6 @@ export function validateConfig(config) {
     errors.push("Client ID is required (CLIENT_ID environment variable)");
   }
 
-  
   if (process.env.NODE_ENV === 'production') {
     if (!process.env.POSTGRES_HOST) {
       errors.push("PostgreSQL host is required in production (POSTGRES_HOST environment variable)");
@@ -508,7 +649,7 @@ export function validateConfig(config) {
 
 const configErrors = validateConfig(botConfig);
 if (configErrors.length > 0) {
-  logger.error("Bot configuration errors:", configErrors.join("\n"));
+  logger.error("ViperGuard configuration errors:", configErrors.join("\n"));
   if (process.env.NODE_ENV === "production") {
     process.exit(1);
   }
@@ -518,10 +659,8 @@ if (configErrors.length > 0) {
 export const BotConfig = botConfig;
 
 export function getColor(path, fallback = "#99AAB5") {
-  
   if (typeof path === "number") return path;
   if (typeof path === "string" && path.startsWith("#")) {
-    
     return parseInt(path.replace("#", ""), 16);
   }
   const result = path
@@ -530,8 +669,6 @@ export function getColor(path, fallback = "#99AAB5") {
       (obj, key) => (obj && obj[key] !== undefined ? obj[key] : fallback),
       botConfig.embeds.colors,
     );
-  
-  // Convert the result to integer if it's a hex string
   if (typeof result === "string" && result.startsWith("#")) {
     return parseInt(result.replace("#", ""), 16);
   }

@@ -1,0 +1,109 @@
+import express from 'express';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
+import passport from 'passport';
+import { Strategy as DiscordStrategy } from 'passport-discord';
+import cors from 'cors';
+import pg from 'pg';
+import dotenv from 'dotenv';
+
+import authRoutes from './routes/auth.js';
+import serverRoutes from './routes/server.js';
+import moderationRoutes from './routes/moderation.js';
+import economyRoutes from './routes/economy.js';
+import featuresRoutes from './routes/features.js';
+
+dotenv.config();
+
+// ==============================
+// DATABASE CONNECTION
+// ==============================
+export const db = new pg.Pool({
+  host: process.env.POSTGRES_HOST,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
+  port: process.env.POSTGRES_PORT || 5432,
+});
+
+const app = express();
+const PgSession = connectPgSimple(session);
+
+// ==============================
+// MIDDLEWARE
+// ==============================
+app.use(express.json());
+app.use(cors({
+  origin: process.env.DASHBOARD_URL || 'http://localhost:5173',
+  credentials: true,
+}));
+
+// Sessions stored in your existing Postgres DB
+app.use(session({
+  store: new PgSession({ pool: db, tableName: 'dashboard_sessions' }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    secure: process.env.NODE_ENV === 'production',
+  },
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// ==============================
+// DISCORD OAUTH STRATEGY
+// ==============================
+passport.use(new DiscordStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.DISCORD_CLIENT_SECRET,
+  callbackURL: process.env.DISCORD_CALLBACK_URL || 'http://localhost:3001/auth/discord/callback',
+  // We request guilds so we can check if the user is in your server
+  scope: ['identify', 'guilds', 'guilds.members.read'],
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    // Save or update the user in the DB
+    await db.query(`
+      INSERT INTO dashboard_users (discord_id, username, avatar, access_token, refresh_token)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (discord_id) DO UPDATE
+      SET username = $2, avatar = $3, access_token = $4, refresh_token = $5, last_login = NOW()
+    `, [profile.id, profile.username, profile.avatar, accessToken, refreshToken]);
+
+    return done(null, profile);
+  } catch (err) {
+    return done(err, null);
+  }
+}));
+
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const result = await db.query('SELECT * FROM dashboard_users WHERE discord_id = $1', [id]);
+    done(null, result.rows[0] || null);
+  } catch (err) {
+    done(err, null);
+  }
+});
+
+// ==============================
+// ROUTES
+// ==============================
+app.use('/auth', authRoutes);
+app.use('/api/server', serverRoutes);
+app.use('/api/moderation', moderationRoutes);
+app.use('/api/economy', economyRoutes);
+app.use('/api/features', featuresRoutes);
+
+// Health check
+app.get('/health', (req, res) => res.json({ status: 'ok', bot: 'ViperGuard' }));
+
+// ==============================
+// START SERVER
+// ==============================
+const PORT = process.env.DASHBOARD_PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🐍 ViperGuard Dashboard API running on http://localhost:${PORT}`);
+});

@@ -48,6 +48,9 @@ export const botConfig = {
 
     // Optional server ID used for testing slash commands quickly.
     testGuildId: process.env.TEST_GUILD_ID,
+
+    // Default prefix for text-based commands.
+    prefix: ".",
   },
 
   // =========================
@@ -543,7 +546,3 @@ export function getRandomColor() {
 }
 
 export default botConfig;
-
-
-
-
